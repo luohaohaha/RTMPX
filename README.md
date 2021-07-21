@@ -11,3 +11,18 @@ This is a project of librtmp & camerax & mediacodec for rtmp publish
 
 ### To be optimized
 - [ ] YUV420_888 to NV12 and rotation jni implementation
+
+
+
+
+
+
+
+
+
+
+## Thanks
+[LibRtmp-Client-for-Android][1]
+
+[1]: https://github.com/ant-media/LibRtmp-Client-for-Android
+
