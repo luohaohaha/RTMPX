@@ -1,4 +1,4 @@
 # RTMPX
 
 
-This is a project of librtmp and camerax for rtmp publish
+This is a project of librtmp & camerax & mediacodec for rtmp publish
