@@ -5,12 +5,13 @@ This is a project of librtmp & camerax & mediacodec for rtmp publish
 
 
 ### Features
-- [x] camerax 60 fps preview and record(only camera2)
-- [x] Record while publishing
+- [x] camerax 60 fps preview and record and publish(only camera2)
+- [x] Publish and record
 - [x] android mediacodec encode
 
 ### To be optimized
-- [ ] YUV420_888 to NV12 and rotation jni implementation
+- [ ] add notes
+- [ ] support filters
 
 
 
