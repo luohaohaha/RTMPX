@@ -12,6 +12,7 @@ This is a project of librtmp & camerax & mediacodec for rtmp publish
 ### To be optimized
 - [ ] add notes
 - [ ] support filters
+- [ ] optimization of vertical screen libyuv rotation
 
 
 
