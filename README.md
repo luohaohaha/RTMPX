@@ -23,11 +23,11 @@ This is a project of librtmp & camerax & mediacodec for rtmp publish
 ```
   def camerax_version = "1.0.0"
 // CameraX core library using camera2 implementation
-    api "androidx.camera:camera-camera2:$camerax_version"
+    implementation "androidx.camera:camera-camera2:$camerax_version"
 // CameraX Lifecycle Library
-    api "androidx.camera:camera-lifecycle:$camerax_version"
+    implementation "androidx.camera:camera-lifecycle:$camerax_version"
 // CameraX View class
-    api "androidx.camera:camera-view:1.0.0-alpha24"
+    implementation "androidx.camera:camera-view:1.0.0-alpha24"
 ```
 
 #### 2. Put CameraXImplView in the xml layout
