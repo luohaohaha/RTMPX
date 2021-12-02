@@ -10,7 +10,7 @@ This is a project of librtmp & camerax & mediacodec for rtmp publish
 - [x] android mediacodec encode
 
 ### Known issues
-- [x] In some devices, when the vertical screen is 60fps, the libyuv rotation time is too long(More than 16ms), which causes the fps to reach 60 (e.g. Google Pixel2)
+- [x] In some devices, when the vertical screen is 60fps, the libyuv rotation time is too long, which causes the fps to reach 60 (e.g. Google Pixel2)
 - [x] Waiting for you to find out
 
 ### To be optimized
