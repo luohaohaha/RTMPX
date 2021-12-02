@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/exposure_container"
+    android:layout_width="wrap_content"
+    android:layout_height="150dp"
+    android:layout_marginLeft="-30dp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    >
+
+    <ImageView
+        android:id="@+id/exposure_locked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/selector_exposure_lock_unlock" />
+
+    <com.rtmpx.app.widget.VerticalSeekBar
+        android:id="@+id/exposure_slider"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:thumb="@drawable/ic_baseline_brightness_6_24"
+        android:layout_marginBottom="16dp"
+        android:progress="0" />
+</LinearLayout>
