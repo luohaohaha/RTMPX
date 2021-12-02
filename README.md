@@ -30,7 +30,7 @@ This is a project of librtmp & camerax & mediacodec for rtmp publish
     api "androidx.camera:camera-view:1.0.0-alpha24"
 ```
 
-#### 2.Put CameraXImplView in the xml layout
+#### 2. Put CameraXImplView in the xml layout
 
 ```
 ...
@@ -41,7 +41,7 @@ This is a project of librtmp & camerax & mediacodec for rtmp publish
 ...
 ```
 
-#### 3.set publish config
+#### 3. set publish config
 ```
   Config config = new Config.ConfigBuilder()
                 .withBitRate(1000 * 5000) //bitrate
@@ -54,7 +54,7 @@ This is a project of librtmp & camerax & mediacodec for rtmp publish
                 .build();
 ```
 
-#### 4.bind camera preview
+#### 4. bind camera preview
 
 ```
  CameraXImplView mPreview = findViewById(R.id.preview);
