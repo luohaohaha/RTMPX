@@ -1,7 +1,7 @@
 # RTMPX
 
 
-This is a android project of librtmp & camerax & mediacodec for rtmp publish
+This is an android project of librtmp & camerax & mediacodec for rtmp publish
 
 
 ### Features
