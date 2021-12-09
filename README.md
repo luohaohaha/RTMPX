@@ -5,7 +5,7 @@ This is an android project of librtmp & camerax & mediacodec for rtmp publish
 
 
 ### Features
-- [x] camerax 60 fps preview and record and publish
+- [x] camerax 60 fps preview
 - [x] Publish and record
 - [x] android mediacodec encode
 
