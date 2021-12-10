@@ -19,7 +19,9 @@ This is an android project of librtmp & camerax & mediacodec for rtmp publish
 - [ ] optimization of vertical screen libyuv rotation
 
 ### How to use(Refer to sample app)
-#### 1. Necessary dependence camerax
+#### 1. Depend
+
+##### 1) Download aar (Necessary dependence camerax)
 ```
   def camerax_version = "1.0.0"
 // CameraX core library using camera2 implementation
@@ -29,6 +31,13 @@ This is an android project of librtmp & camerax & mediacodec for rtmp publish
 // CameraX View class
     implementation "androidx.camera:camera-view:1.0.0-alpha24"
 ```
+or 
+
+##### 2) mavenCentral()
+```
+implementation 'io.github.luohaohaha:rtmpx:latest'
+```
+
 
 #### 2. Put CameraXImplView in the xml layout
 
