@@ -4,6 +4,13 @@
 This is an android project of librtmp & camerax & mediacodec for rtmp publish
 
 
+
+https://user-images.githubusercontent.com/3376376/145600890-4abd9b30-ba70-4f04-b1ca-1409be121838.mp4
+
+
+https://user-images.githubusercontent.com/3376376/145600918-9c88f7b4-5ed5-4bde-9ec9-36c10fa07d81.mp4
+
+
 ### Features
 - [x] camerax 60 fps preview
 - [x] Publish and record
