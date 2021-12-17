@@ -2,7 +2,7 @@
 
 [English doc][1]
 
-[1]: http://www.runoob.com/
+[1]: https://github.com/luohaohaha/RTMPX/blob/dev/README_en.md
 
 RTMPX是一个android的rtmp推流库，采集使用camerax，支持60fps，编码使用mediacodec硬编码，推流使用了librtmp。
 
