@@ -1,8 +1,7 @@
 # RTMPX
 
 
-This is an android project of librtmp & camerax & mediacodec for rtmp publish
-
+RTMPX是一个android的rtmp推流库，采集使用camerax，支持60fps，编码使用mediacodec硬编码，推流使用了librtmp。
 
 
 https://user-images.githubusercontent.com/3376376/145600890-4abd9b30-ba70-4f04-b1ca-1409be121838.mp4
@@ -11,24 +10,23 @@ https://user-images.githubusercontent.com/3376376/145600890-4abd9b30-ba70-4f04-b
 https://user-images.githubusercontent.com/3376376/145600918-9c88f7b4-5ed5-4bde-9ec9-36c10fa07d81.mp4
 
 
-### Features
-- [x] camerax 60 fps preview
-- [x] Publish and record
-- [x] android mediacodec encode
+### 支持的功能
+- [x] 60帧预览、推流(理论上支持更高，只要手机支持，目前pixel2最高设置240fps，但是没效果)
+- [x] 边推流边录制(保存到本地)
 
-### Known issues
-- [x] In some devices, when the vertical screen is 60fps, the libyuv rotation time is too long, which causes the fps to reach 60 (e.g. Google Pixel2)
-- [x] Waiting for you to find out
+### 已知问题
+- [x] 部分机型在竖屏推流60fps的时候性能不够，导致libyuv旋转需要很长时间(例如pixel2，I帧旋转要12ms)，导致达不到60fps
+- [x] 等你发现
 
-### To be optimized
-- [ ] add notes
-- [ ] support filters
-- [ ] optimization of vertical screen libyuv rotation
+### 待优化
+- [ ] 添加注释
+- [ ] 支持滤镜
+- [ ] 竖屏libyuv旋转时长优化
 
-### How to use(Refer to sample app)
-#### 1. Depend
+### 怎么使用(参考示例app)
+#### 1. 依赖
 
-##### 1) Download aar (Necessary dependence camerax)
+##### 1) 下载aar(这种集成aar文件的方式，camerax库是必须依赖)
 ```
   def camerax_version = "1.0.0"
 // CameraX core library using camera2 implementation
@@ -40,13 +38,13 @@ https://user-images.githubusercontent.com/3376376/145600918-9c88f7b4-5ed5-4bde-9
 ```
 or 
 
-##### 2) mavenCentral()
+##### 2) mavenCentral远程依赖
 ```
 implementation 'io.github.luohaohaha:rtmpx:latest'
 ```
 
 
-#### 2. Put CameraXImplView in the xml layout
+#### 2. 将CameraXImplView 放入布局
 
 ```
 ...
@@ -57,20 +55,20 @@ implementation 'io.github.luohaohaha:rtmpx:latest'
 ...
 ```
 
-#### 3. set publish config
+#### 3. 设置推流配置
 ```
   Config config = new Config.ConfigBuilder()
-                .withBitRate(1000 * 5000) //bitrate
-                .withPublishUrl("rtmp://192.168.50.170:18888/test/live") //publish url
-                .withFrameRate(60)//fps
-                .withVideoWidth(1080)//width 
-                .withVideoHeight(1920) //height
-                .withRecordVideo(false)//record video
-                .withRecordVideoPath("sdcard/dump.mp4")//path
+                .withBitRate(1000 * 5000) //码率
+                .withPublishUrl("rtmp://192.168.50.170:18888/test/live") //推流url
+                .withFrameRate(60)//帧率
+                .withVideoWidth(1080)//视频宽 
+                .withVideoHeight(1920) //视频高
+                .withRecordVideo(false)//是否录制
+                .withRecordVideoPath("sdcard/dump.mp4")//录制文件保存文件
                 .build();
 ```
 
-#### 4. bind camera preview
+#### 4. 绑定预览控件
 
 ```
  CameraXImplView mPreview = findViewById(R.id.preview);
@@ -83,7 +81,7 @@ implementation 'io.github.luohaohaha:rtmpx:latest'
  
 ```
 
-#### 5. start preview & start publish 
+#### 5. 开启预览 & 开始推流 / 停止预览 & 停止推流
 
 ```
 mPreview.startPreview();
@@ -100,53 +98,53 @@ mPublisher.stopPublish();
 
 
 
-### IPublishListener Callback
+### IPublishListener 回调
 
 ```
     /**
-     * rtmp is connecting
+     * rtmp连接中
      */
     void onConnecting();
 
     /**
-     * rtmp connection is successful
+     * rtmp 连接建立成功
      */
     void onConnected();
 
     /**
-     * rtmp connection failed
-     * @param code error code
+     * rtmp 连接失败
+     * @param code error code 失败错误码
      */
     void onConnectedFailed(int code);
 
     /**
-     * Start publishing
+     * 开始推流
      */
     void onStartPublish();
 
     /**
-     * Stop publishing
+     * 结束推流
      */
     void onStopPublish();
 
     /**
-     * Start recording
+     * 开始录制
      */
     void onStartRecord();
 
     /**
-     * Stop recording
+     * 结束录制
      */
     void onStopRecord();
 
     /**
-     * fps statistics
+     * 发送平均帧率统计(带宽不足的情况下会低于设置帧率)
      * @param fps avg fps
      */
     void onFpsStatistic(int fps);
 
     /**
-     * rtmp disconnect
+     * rtmp 断开连接
      */
     void onRtmpDisconnect();
 ```
