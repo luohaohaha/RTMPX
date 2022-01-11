@@ -38,11 +38,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 //    implementation project(path: ':rtmpx_library')
-//    implementation 'io.github.luohaohaha:rtmpx:1.0.1'
+    implementation 'io.github.luohaohaha:rtmpx:1.0.2'
 
 
-    //    implementation project(path: ':io.github.luohaohaha:')
-    implementation(name:"rtmpx-${version}", ext:'aar')
+   /* implementation(name:"rtmpx-${version}", ext:'aar')
 
     def camerax_version = "1.0.0"
 // CameraX core library using camera2 implementation
@@ -50,5 +49,5 @@ dependencies {
 // CameraX Lifecycle Library
     implementation "androidx.camera:camera-lifecycle:$camerax_version"
 // CameraX View class
-    implementation "androidx.camera:camera-view:1.0.0-alpha24"
+    implementation "androidx.camera:camera-view:1.0.0-alpha24"*/
 }
