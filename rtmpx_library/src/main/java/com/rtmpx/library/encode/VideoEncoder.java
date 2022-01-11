@@ -5,8 +5,13 @@ import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.rtmpx.library.config.Config;
 import com.rtmpx.library.rtmp.RTMPFrame;
@@ -28,7 +33,7 @@ import static com.rtmpx.library.config.Const.CSD_0;
 import static com.rtmpx.library.config.Const.CSD_1;
 import static com.rtmpx.library.config.Const.FRAME_TYPE_VIDEO;
 
-public class VideoEncoder extends Encoder<byte[]>{
+public class VideoEncoder extends Encoder<byte[]> implements Handler.Callback {
     private static final String TAG = "VideoEncoder";
     private MediaCodec mAsyncVideoCodec;
     private AtomicBoolean mEncodeStarted = new AtomicBoolean(false);
@@ -36,12 +41,28 @@ public class VideoEncoder extends Encoder<byte[]>{
 
     private ByteBuffer mSps;
     private ByteBuffer mPps;
-
+    private HandlerThread mWorkThread;
+    private Handler mWorkHandler;
+    private static final int MSG_START = 0;
 
     public VideoEncoder(Config mConfig) {
         super(mConfig);
+        checkThread();
     }
 
+    private void checkThread() {
+        if (null == mWorkThread || !mWorkThread.isAlive() || mWorkThread.isInterrupted()) {
+            mWorkThread = new HandlerThread("VRVideoEncoder") {
+                @Override
+                protected void onLooperPrepared() {
+                    super.onLooperPrepared();
+                    mWorkHandler = new Handler(getLooper(), VideoEncoder.this);
+                    mWorkHandler.obtainMessage(MSG_START).sendToTarget();
+                }
+            };
+            mWorkThread.start();
+        }
+    }
     @Override
     public void config() throws Exception {
         try {
@@ -167,7 +188,7 @@ public class VideoEncoder extends Encoder<byte[]>{
             inputBuffer.put(encodeBuffer);
             length = encodeBuffer.length;
             mEncodedFrameCount++;
-            mAsyncVideoCodec.queueInputBuffer(index, 0, length, SystemClock.uptimeMillis()*1000, 0);
+            mAsyncVideoCodec.queueInputBuffer(index, 0, length, SystemClock.uptimeMillis()*1000 -mStartTime, 0);
         }
     }
 
@@ -231,7 +252,7 @@ public class VideoEncoder extends Encoder<byte[]>{
             RTMPFrame frame = new RTMPFrame();
             frame.setType(FRAME_TYPE_VIDEO);
             frame.setData(tmpBuffer);
-            frame.setPresentationTimeUs(SystemClock.uptimeMillis() * 1000  - mStartTime);
+            frame.setPresentationTimeUs(SystemClock.uptimeMillis()   - mStartTime);
             frame.setBufferInfo(info);
             RTMPPublisher.getInstance().addFrame(frame);
             Log.i(TAG, "mPresentationTimeUs == " + info.presentationTimeUs);
@@ -251,4 +272,17 @@ public class VideoEncoder extends Encoder<byte[]>{
         mPps = format.getByteBuffer(CSD_1);
     }
 
+    @Override
+    public boolean handleMessage(@NonNull Message msg) {
+        switch (msg.what) {
+            case MSG_START:
+                try {
+                    config();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+        return false;
+    }
 }

@@ -91,7 +91,7 @@ public class RTMPPublisher implements Handler.Callback {
         }
         if (null == mWorkThread || !mWorkThread.isAlive() || mWorkThread.isInterrupted()) {
             mThreadWorked.set(false);
-            mWorkThread = new HandlerThread("VRPublish") {
+            mWorkThread = new HandlerThread("RTMPPublisher") {
                 @Override
                 protected void onLooperPrepared() {
                     super.onLooperPrepared();
@@ -210,6 +210,11 @@ public class RTMPPublisher implements Handler.Callback {
                 }
                 if (connected) {
                     mCallbackHandler.obtainMessage(MSG_RTMP_CONNECTED).sendToTarget();
+                    long time = SystemClock.uptimeMillis();
+                    mVideoEncoder.setStartTime(time);
+                    mAudioEncoder.setStartTime(time);
+                    mVideoEncoder.start();
+                    mAudioEncoder.start();
                     startWrite();
                 } else {
                     mCallbackHandler.obtainMessage(MSG_RTMP_CONNECTED_FAILED, status).sendToTarget();
@@ -221,11 +226,6 @@ public class RTMPPublisher implements Handler.Callback {
                 }
                 break;
             case MSG_RTMP_CONNECTED:
-                long time = SystemClock.uptimeMillis() * 1000;
-                mVideoEncoder.setStartTime(time);
-                mAudioEncoder.setStartTime(time);
-                mVideoEncoder.start();
-                mAudioEncoder.start();
                 if (null != mPublishListener) {
                     mPublishListener.onConnected();
                 }
@@ -386,7 +386,7 @@ public class RTMPPublisher implements Handler.Callback {
         }
         byte[] data = frame.getData();
         int type = frame.getType();
-        long offset = frame.getPresentationTimeUs() / 1000;
+        long offset = frame.getPresentationTimeUs() ;
         if (offset < mLastTimestamp && frame.getBufferInfo().flags != BUFFER_FLAG_CODEC_CONFIG) {
             offset = mLastTimestamp;
         }

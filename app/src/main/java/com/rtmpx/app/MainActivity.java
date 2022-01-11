@@ -208,8 +208,8 @@ public class MainActivity extends AppCompatActivity implements FocusView.OnExpos
 
     private Config buildConfig() {
         Config config = new Config.ConfigBuilder()
-                .withBitRate(1000 * 5000)
-                .withPublishUrl("rtmp://192.168.50.170:18888/test/live")
+                .withBitRate(1000 * 2000)
+                .withPublishUrl("rtmp://192.168.33.38:1935/test/live")
                 .withFrameRate(30).withVideoWidth(1080).withVideoHeight(1920)
                 .withRecordVideo(false).withRecordVideoPath("sdcard/dump.mp4")
                 .build();

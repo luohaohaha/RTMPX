@@ -3,8 +3,13 @@ package com.rtmpx.library.encode;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.rtmpx.library.config.Config;
 import com.rtmpx.library.rtmp.RTMPFrame;
@@ -22,18 +27,34 @@ import static com.rtmpx.library.config.Const.FRAME_TYPE_AUDIO;
 import static com.rtmpx.library.config.Const.MAX_BUFFER_SIZE;
 
 
-public class AudioEncoder extends Encoder<byte[]>{
+public class AudioEncoder extends Encoder<byte[]> implements Handler.Callback {
     private static final String TAG = "AudioEncoder";
     private MediaCodec mAsyncAudioCodec;
     private AtomicBoolean mEncodeStarted = new AtomicBoolean(false);
     private Queue<Integer> mIndexQueue = new ConcurrentLinkedDeque<>();
     private ByteBuffer mSps;
-
+    private HandlerThread mWorkThread;
+    private Handler mWorkHandler;
+    private static final int MSG_START = 0;
 
     public AudioEncoder(Config mConfig) {
         super(mConfig);
+        checkThread();
     }
 
+    private void checkThread() {
+        if (null == mWorkThread || !mWorkThread.isAlive() || mWorkThread.isInterrupted()) {
+            mWorkThread = new HandlerThread("VRAudioEncoder") {
+                @Override
+                protected void onLooperPrepared() {
+                    super.onLooperPrepared();
+                    mWorkHandler = new Handler(getLooper(), AudioEncoder.this);
+                    mWorkHandler.obtainMessage(MSG_START).sendToTarget();
+                }
+            };
+            mWorkThread.start();
+        }
+    }
 
     @Override
     public void config() throws Exception {
@@ -87,7 +108,7 @@ public class AudioEncoder extends Encoder<byte[]>{
             inputBuffer.put(encodeBuffer);
             length = encodeBuffer.length;
             mEncodedFrameCount++;
-            mAsyncAudioCodec.queueInputBuffer(index, 0, length, SystemClock.uptimeMillis()*1000, 0);
+            mAsyncAudioCodec.queueInputBuffer(index, 0, length, SystemClock.uptimeMillis() * 1000 - mStartTime, 0);
         }
     }
 
@@ -151,7 +172,7 @@ public class AudioEncoder extends Encoder<byte[]>{
             RTMPFrame frame = new RTMPFrame();
             frame.setType(FRAME_TYPE_AUDIO);
             frame.setData(tmpBuffer);
-            frame.setPresentationTimeUs(SystemClock.uptimeMillis() * 1000 - mStartTime);
+            frame.setPresentationTimeUs(SystemClock.uptimeMillis() - mStartTime);
             frame.setBufferInfo(info);
             RTMPPublisher.getInstance().addFrame(frame);
         }
@@ -169,4 +190,17 @@ public class AudioEncoder extends Encoder<byte[]>{
         mSps = format.getByteBuffer(CSD_0);
     }
 
+    @Override
+    public boolean handleMessage(@NonNull Message msg) {
+        switch (msg.what) {
+            case MSG_START:
+                try {
+                    config();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+        return false;
+    }
 }
