@@ -107,7 +107,11 @@ public class AudioRecorder implements Handler.Callback {
     private void stopRecordPcm() {
         mRecordStarted.set(false);
         if (mAudioRecorder != null) {
-            mAudioRecorder.stop();
+            try {
+                mAudioRecorder.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         if (null != mAudioRecordHandler) {
             mAudioRecordHandler.removeCallbacksAndMessages(null);
