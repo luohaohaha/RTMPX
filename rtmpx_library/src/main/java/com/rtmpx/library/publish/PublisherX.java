@@ -105,7 +105,7 @@ public class PublisherX extends ICameraPreviewCallback implements AudioRecorder.
     @Override
     public void handleImage(ImageProxy image, int rotation) {
         if (!RTMPPublisher.getInstance().isWorked()) {
-            Log.d(TAG, "rtmp not  worked  no handle handleImage");
+            Log.d(TAG, "rtmp not  worked  no handle handleImage "+rotation + " image rotation "+image.getImageInfo().getRotationDegrees());
             return;
         }
         byte[] data = ConvertUtils.YUV_420_888toNV12(image, rotation);

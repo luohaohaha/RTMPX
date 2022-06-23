@@ -53,7 +53,7 @@ public class ConvertUtils {
     public static byte[] YUV_420_888toPortraitNV12(ImageProxy image, int rotation) {
         YuvFrame yuvFrame = YuvHelper.convertToI420(image.getImage());
         //TODO optimization of vertical screen libyuv rotation
-        byte[] bytes = YuvHelper.rotate(yuvFrame, 90).asArray();
+        byte[] bytes = YuvHelper.rotate(yuvFrame, image.getImageInfo().getRotationDegrees()).asArray();
         if (null == mPortraitYUV || mPortraitYUV.length != bytes.length) {
             mPortraitYUV = new byte[bytes.length];
         }
