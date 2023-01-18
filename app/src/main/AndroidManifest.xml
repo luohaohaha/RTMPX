@@ -15,13 +15,14 @@
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.RTMPX">
-        <activity android:name=".MainActivity" android:configChanges="orientation|screenSize" android:launchMode="singleTask">
+        <activity android:name=".ui.MainActivity" android:configChanges="orientation|screenSize" android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.PublishPreferenceActivity"/>
     </application>
 
 </manifest>

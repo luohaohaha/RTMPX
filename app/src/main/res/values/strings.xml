@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">app</string>
+    <string name="app_name">Application</string>
+    <string name="publish_bitrate">Bitrate(kbps)</string>
+    <string name="publish_bitrate_hint">Please enter the publish bitrate</string>
+    <string name="publish_url">Publish url</string>
+    <string name="publish_url_hint">Please enter the publish address</string>
+    <string name="publish_frame_rate">Publish frame rate</string>
+    <string name="publish_frame_rate_hint">Please enter the publish rate</string>
+    <string name="publish_resolution">Publish resolution</string>
+    <string name="publish_resolution_hint">Please enter the publish resolution (eg: 1080x1920)</string>
+    <string name="publish_record">Record switch</string>
+    <string name="publish_record_switch">whether to record</string>
+    <string name="publish_record_path">Record path</string>
+    <string name="publish_record_path_hint">Please enter the record path</string>
+    <string name="save">Save</string>
 </resources>

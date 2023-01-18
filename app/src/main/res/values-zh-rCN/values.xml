@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">app</string>
+    <string name="publish_bitrate">码率(kbps)</string>
+    <string name="publish_bitrate_hint">请输入推流码率</string>
+    <string name="publish_url">推流地址</string>
+    <string name="publish_url_hint">请输入推流地址</string>
+    <string name="publish_frame_rate">推流帧率</string>
+    <string name="publish_frame_rate_hint">请输入推流帧率</string>
+    <string name="publish_resolution">推流分辨率</string>
+    <string name="publish_resolution_hint">请输入推流分辨率(如：1080x1920)</string>
+    <string name="publish_record">录制开关</string>
+    <string name="publish_record_switch">是否录制</string>
+    <string name="publish_record_path">录制路径</string>
+    <string name="publish_record_path_hint">请输入录制路径</string>
+    <string name="save">保存</string>
+
+</resources>

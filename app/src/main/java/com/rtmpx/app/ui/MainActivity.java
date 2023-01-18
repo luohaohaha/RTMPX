@@ -1,27 +1,49 @@
-package com.rtmpx.app;
+package com.rtmpx.app.ui;
+
+import static com.rtmpx.app.config.Const.BITRATE;
+import static com.rtmpx.app.config.Const.FRAME_RATE;
+import static com.rtmpx.app.config.Const.HEIGHT;
+import static com.rtmpx.app.config.Const.PREFERENCE_PUBLISH_CONFIG;
+import static com.rtmpx.app.config.Const.PREFERENCE_SAVE_CONFIG;
+import static com.rtmpx.app.config.Const.PUBLISH_URL;
+import static com.rtmpx.app.config.Const.RECORD;
+import static com.rtmpx.app.config.Const.RECORD_PATH;
+import static com.rtmpx.app.config.Const.RESULT;
+import static com.rtmpx.app.config.Const.WIDTH;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.PermissionChecker;
 
+import com.rtmpx.app.R;
 import com.rtmpx.app.widget.FocusView;
 import com.rtmpx.library.camera.widget.CameraXImplView;
 import com.rtmpx.library.config.Config;
 import com.rtmpx.library.publish.IPublishListener;
 import com.rtmpx.library.publish.PublisherX;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -82,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements FocusView.OnExpos
     private Config mConfig;
     private Button mStartPublish;
     private Button mStartPreview;
+    private ImageView mSwitchCamera, mPublishSetting;
+
+    private ActivityResultLauncher<Intent> mResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,32 +116,56 @@ public class MainActivity extends AppCompatActivity implements FocusView.OnExpos
         getWindow().setStatusBarColor(Color.TRANSPARENT);
         setContentView(R.layout.activity_main);
         bindViews();
-        bindPublisher();
+        mResultLauncher = registerResult();
     }
 
     private void bindPublisher() {
-        mPublisher = new PublisherX(mConfig);
-        mPublisher.bindCamera(mPreview);
+        mPublisher = new PublisherX(mConfig, mPreview);
+//        mPublisher.bindCamera(mPreview);
         mPublisher.setPublishListener(this);
     }
 
     private void bindViews() {
-        mConfig = buildConfig();
-        if(mConfig.getVideoWidth() > mConfig.getVideoHeight()){
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
         mPreview = findViewById(R.id.preview);
         mFocusView = findViewById(R.id.focus_container);
         mStartPublish = findViewById(R.id.start_publish);
         mStartPreview = findViewById(R.id.start_preview);
+        mSwitchCamera = findViewById(R.id.switch_camera);
+        mPublishSetting = findViewById(R.id.publish_setting);
 
-        mPreview.setPreviewRange(mConfig.getFrameRate(),mConfig.getFrameRate());
-        mPreview.setTargetResolution(mConfig.getVideoWidth(), mConfig.getVideoHeight());
         mStartPublish.setOnClickListener(this);
         mStartPreview.setOnClickListener(this);
+        mSwitchCamera.setOnClickListener(this);
+        mPublishSetting.setOnClickListener(this);
         mPreview.setOnTouchListener(mFocusTouchListener);
         mFocusView.setExposureSelectListener(this);
+
+        String savedCong = getSharedPreferences(PREFERENCE_PUBLISH_CONFIG, MODE_PRIVATE).getString(PREFERENCE_SAVE_CONFIG, "");
+        if (TextUtils.isEmpty(savedCong)) {
+            bindConfig(buildDefaultConfig());
+        } else {
+            try {
+                bindConfig(buildConfigWithJson(savedCong));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
+
+    private void bindConfig(Config config) {
+        Log.d(TAG, " ===bindConfig=== " + config.toString());
+        mConfig = config;
+        if (mConfig.getVideoWidth() > mConfig.getVideoHeight()) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+        mPreview.setPreviewRange(mConfig.getFrameRate(), mConfig.getFrameRate());
+        mPreview.setTargetResolution(mConfig.getVideoWidth(), mConfig.getVideoHeight());
+
+        bindPublisher();
+    }
+
     private void autoExposure() {
         if (mPreview.autoExposure()) {
             mFocusView.setExposureValue(0);
@@ -206,14 +255,27 @@ public class MainActivity extends AppCompatActivity implements FocusView.OnExpos
         mFocusView.setExposureLocked(!toggle);
     }
 
-    private Config buildConfig() {
+    private Config buildDefaultConfig() {
         Config config = new Config.ConfigBuilder()
                 .withBitRate(1000 * 2000)
-                .withPublishUrl("rtmp://192.168.50.170:18888/test/live")
+                .withPublishUrl("rtmp://192.168.33.98:1935/rtmplive/live")
                 .withFrameRate(30).withVideoWidth(1080).withVideoHeight(1920)
                 .withRecordVideo(false).withRecordVideoPath("sdcard/dump.mp4")
                 .build();
         return config;
+    }
+
+    private Config buildConfigWithJson(String configJson) throws JSONException {
+        JSONObject config = new JSONObject(configJson);
+        return new Config.ConfigBuilder()
+                .withBitRate(config.optInt(BITRATE))
+                .withPublishUrl(config.optString(PUBLISH_URL))
+                .withFrameRate(config.optInt(FRAME_RATE))
+                .withVideoWidth(config.optInt(WIDTH))
+                .withVideoHeight(config.optInt(HEIGHT))
+                .withRecordVideo(config.optBoolean(RECORD))
+                .withRecordVideoPath(config.optString(RECORD_PATH))
+                .build();
     }
 
     @Override
@@ -221,57 +283,81 @@ public class MainActivity extends AppCompatActivity implements FocusView.OnExpos
         switch (v.getId()) {
             case R.id.start_preview:
                 startPreview();
-                mPreview.switchCamera(0);
+//                mPreview.switchCamera(0);
                 break;
             case R.id.start_publish:
                 togglePublish();
                 break;
+            case R.id.switch_camera:
+                mPreview.switchCamera((1 == mPreview.getCameraId()) ? 0 : 1);
+                break;
+            case R.id.publish_setting:
+                Intent intent = new Intent(this, PublishPreferenceActivity.class);
+                mResultLauncher.launch(intent);
+                break;
         }
+    }
+
+    private ActivityResultLauncher<Intent> registerResult() {
+        return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == RESULT_OK) {
+                    String resultConfig = result.getData().getStringExtra(RESULT);
+                    Log.d(TAG, " =====resultConfig==== " + resultConfig);
+                    try {
+                        bindConfig(buildConfigWithJson(resultConfig));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     @Override
     public void onConnecting() {
-        Log.d(TAG,"========onConnecting========");
+        Log.d(TAG, "========onConnecting========");
     }
 
     @Override
     public void onConnected() {
-        Log.d(TAG,"========onConnected========");
+        Log.d(TAG, "========onConnected========");
     }
 
     @Override
     public void onConnectedFailed(int code) {
-        Log.d(TAG,"========onConnectedFailed========"+code);
+        Log.d(TAG, "========onConnectedFailed========" + code);
     }
 
     @Override
     public void onStartPublish() {
-        Log.d(TAG,"========onStartPublish========");
+        Log.d(TAG, "========onStartPublish========");
     }
 
     @Override
     public void onStopPublish() {
-        Log.d(TAG,"========onStopPublish========");
+        Log.d(TAG, "========onStopPublish========");
         stopPublish();
     }
 
     @Override
     public void onStartRecord() {
-        Log.d(TAG,"========onStartRecord========");
+        Log.d(TAG, "========onStartRecord========");
     }
 
     @Override
     public void onStopRecord() {
-        Log.d(TAG,"========onStopRecord========");
+        Log.d(TAG, "========onStopRecord========");
     }
 
     @Override
     public void onFpsStatistic(int fps) {
-        Log.d(TAG,"========onFpsStatistic========"+fps);
+        Log.d(TAG, "========onFpsStatistic========" + fps);
     }
 
     @Override
     public void onRtmpDisconnect() {
-        Log.d(TAG,"========onRtmpDisconnect========");
+        Log.d(TAG, "========onRtmpDisconnect========");
     }
 }
